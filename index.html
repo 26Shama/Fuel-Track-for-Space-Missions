@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Spacecraft Fuel Prediction</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+        url('https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: rgba(10, 25, 50, 0.85);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px 3px rgba(26, 188, 156, 0.6);
+      max-width: 450px;
+      width: 100%;
+      color: #e0f7f4;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #d1d9e6;
+    }
+
+    input[type="number"], select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="number"]:focus, select:focus {
+      box-shadow: 0 0 8px 2px #1abc9c;
+    }
+
+    input[type="submit"] {
+      width: 100%;
+      background-color: #1abc9c;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 12px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 10px;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #16a085;
+    }
+
+    .result {
+      margin-top: 25px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px 20px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1rem;
+      color: #e0f7f4;
+      box-shadow: inset 0 0 8px #1abc9c;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>FuelTrack for Space Missions</h2>
+    <form action="/predict" method="post">
+      <label for="payload_kg">Payload (kg):</label>
+      <input type="number" step="any" id="payload_kg" name="payload_kg"
+        value="{{ request.form.payload_kg or '' }}" required />
+
+      <label for="thrust_kN">Thrust (kN):</label>
+      <input type="number" step="any" id="thrust_kN" name="thrust_kN"
+        value="{{ request.form.thrust_kN or '' }}" required />
+
+      <label for="isp">Specific Impulse (ISP):</label>
+      <input type="number" step="any" id="isp" name="isp"
+        value="{{ request.form.isp or '' }}" required />
+
+      <label for="launch_angle_deg">Launch Angle (degrees):</label>
+      <input type="number" step="any" id="launch_angle_deg" name="launch_angle_deg"
+        value="{{ request.form.launch_angle_deg or '' }}" required />
+
+      <label for="orbit_type">Orbit Type:</label>
+      <select id="orbit_type" name="orbit_type" required>
+        <option value="" disabled {% if not request.form.get('orbit_type') %}selected{% endif %}>Select orbit type</option>
+        <option value="LEO" {% if request.form.get('orbit_type') == 'LEO' %}selected{% endif %}>LEO</option>
+        <option value="GTO" {% if request.form.get('orbit_type') == 'GTO' %}selected{% endif %}>GTO</option>
+        <option value="Moon" {% if request.form.get('orbit_type') == 'Moon' %}selected{% endif %}>Moon</option>
+        <option value="Mars" {% if request.form.get('orbit_type') == 'Mars' %}selected{% endif %}>Mars</option>
+      </select>
+
+      <label for="engine_type">Engine Type:</label>
+      <select id="engine_type" name="engine_type" required>
+        <option value="" disabled {% if not request.form.get('engine_type') %}selected{% endif %}>Select engine type</option>
+        <option value="Liquid" {% if request.form.get('engine_type') == 'Liquid' %}selected{% endif %}>Liquid</option>
+        <option value="Solid" {% if request.form.get('engine_type') == 'Solid' %}selected{% endif %}>Solid</option>
+        <option value="Hybrid" {% if request.form.get('engine_type') == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+      </select>
+
+      <label for="current_fuel_kg">Current Fuel Available (kg):</label>
+      <input type="number" step="any" id="current_fuel_kg" name="current_fuel_kg"
+        value="{{ request.form.current_fuel_kg or '' }}" required />
+
+      <label for="fuel_price_per_kg">Fuel Price per kg (₹):</label>
+      <input type="number" step="any" id="fuel_price_per_kg" name="fuel_price_per_kg"
+        value="{{ request.form.fuel_price_per_kg or '' }}" required />
+
+      <input type="submit" value="Track Fuel" />
+    </form>
+
+    {% if prediction_text %}
+      <div class="result">{{ prediction_text }}</div>
+    {% endif %}
+  </div>
+</body>
+</html>
