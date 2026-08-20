@@ -76,4 +76,4 @@ python app.py
 ### 📊 Fuel Prediction Result 
 <img width="1378" height="164" alt="edited" src="https://github.com/user-attachments/assets/39ed432a-f9c3-473e-a6ce-bf21b66f59df" />
 
-📜 License This project is licensed under the MIT License.
+
